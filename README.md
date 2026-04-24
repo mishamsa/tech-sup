@@ -17,7 +17,3 @@
 - **Database:** SQLite / PostgreSQL
 - **Tools:** Git, SQL
 
-## Як запустити
-1. Клонувати репозиторій: `git clone <link>`
-2. Встановити залежності: `pip install -r requirements.txt`
-3. Запустити головний файл: `python src/main.py`
