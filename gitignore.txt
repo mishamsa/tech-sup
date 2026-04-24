@@ -1,19 +1,19 @@
-# Python
+# Python & Virtual Environment
 __pycache__/
 *.py[cod]
-*$py.class
 venv/
 .env
+env/
+
+# API Keys & Secrets (CRITICAL)
+config.json
+token.txt
+*.key
 
 # Database
-*.accdb
-*.ldb
 *.sqlite3
+*.db
 
-# IDE
+# IDEs
 .vscode/
 .idea/
-
-# OS
-.DS_Store
-Thumbs.db
