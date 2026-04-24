@@ -1,0 +1,25 @@
+{
+  "extends": ["stylelint-config-standard"],
+  "rules": {
+    "color-named": "never",
+    "color-no-invalid-hex": true,
+    "font-family-no-duplicate-names": true,
+    "font-family-no-missing-generic-family-keyword": true,
+    "unit-allowed-list": ["px", "rem", "em", "%", "vh", "vw", "vmin", "vmax",
+                          "fr", "deg", "s", "ms", "ch", "ex", "svh", "dvh"],
+    "property-no-vendor-prefix": [true, { "ignoreProperties": ["backdrop-filter"] }],
+    "declaration-block-no-duplicate-properties": true,
+    "selector-max-id": 0,
+    "max-nesting-depth": 3,
+    "comment-empty-line-before": ["always", { "except": ["first-nested"] }],
+    "custom-property-pattern": "^[a-z][a-z0-9-]*$",
+    "alpha-value-notation": "number",
+    "color-function-notation": "legacy"
+  },
+  "ignoreFiles": [
+    "node_modules/**",
+    "dist/**",
+    "**/*.min.css",
+    "public/vendor/**"
+  ]
+}
