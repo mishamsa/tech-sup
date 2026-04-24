@@ -1,0 +1,71 @@
+{
+  "timestamp": "2026-04-24T16:27:31.121Z",
+  "environment": {
+    "node": "v22.22.2",
+    "platform": "linux"
+  },
+  "results": [
+    {
+      "name": "DOM: querySelectorAll(50 елементів) + IntersectionObserver.observe",
+      "iterations": 500,
+      "totalMs": 9.7333,
+      "avgMs": 0.0195,
+      "minMs": 0.006,
+      "maxMs": 0.707
+    },
+    {
+      "name": "Logger: форматування запису (string ops)",
+      "iterations": 5000,
+      "totalMs": 26.0224,
+      "avgMs": 0.0052,
+      "minMs": 0.0007,
+      "maxMs": 20.6247
+    },
+    {
+      "name": "tournament: checkStatus() — 4 гілки",
+      "iterations": 10000,
+      "totalMs": 1.6235,
+      "avgMs": 0.0002,
+      "minMs": 0.0001,
+      "maxMs": 0.269
+    },
+    {
+      "name": "tournament: побудова URL + headers (без мережі)",
+      "iterations": 10000,
+      "totalMs": 2.2893,
+      "avgMs": 0.0002,
+      "minMs": 0.0001,
+      "maxMs": 0.3633
+    },
+    {
+      "name": "tournament: фільтр + map завершених раундів (100 раундів)",
+      "iterations": 1000,
+      "totalMs": 7.2299,
+      "avgMs": 0.0072,
+      "minMs": 0.0023,
+      "maxMs": 0.7626
+    },
+    {
+      "name": "DOM: IntersectionObserver observe+unobserve (200 елементів)",
+      "iterations": 500,
+      "totalMs": 6.9288,
+      "avgMs": 0.0139,
+      "minMs": 0.0088,
+      "maxMs": 0.6714
+    }
+  ],
+  "hotspots": [
+    {
+      "name": "DOM: querySelectorAll(50 елементів) + IntersectionObserver.observe",
+      "avgMs": 0.0195
+    },
+    {
+      "name": "DOM: IntersectionObserver observe+unobserve (200 елементів)",
+      "avgMs": 0.0139
+    },
+    {
+      "name": "tournament: фільтр + map завершених раундів (100 раундів)",
+      "avgMs": 0.0072
+    }
+  ]
+}
