@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+<html lang="uk" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  <!-- Primary SEO -->
+  <title>Інформаційна система автоматизації управління турнірами з настільних ігор</title>
+  <meta name="description" content="Бакалаврська робота: розробка інформаційної системи для автоматизації планування, проведення та аналізу турнірів з настільних ігор. До 300 символів опису." />
+  <meta name="keywords" content="настільні ігри, турнір, інформаційна система, автоматизація, управління турнірами, бакалаврська робота, веб-система, база даних" />
+  <meta name="author" content="Студент кафедри інформаційних технологій" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://example.com/" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Інформаційна система для управління турнірами з настільних ігор" />
+  <meta property="og:description" content="Бакалаврська робота з розробки ІС для автоматизації турнірів настільних ігор" />
+  <meta property="og:url" content="https://example.com/" />
+  <meta property="og:locale" content="uk_UA" />
+  <meta property="og:site_name" content="Бакалаврська робота" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="ІС управління турнірами з настільних ігор" />
+  <meta name="twitter:description" content="Бакалаврська робота з автоматизації управління турнірами" />
+
+  <!-- Favicons -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%231a1008'/><text y='24' x='4' font-size='22'>♟</text></svg>" />
+
+  <!-- Schema.org -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ScholarlyArticle",
+    "name": "Інформаційна система для автоматизації управління турнірами з настільних ігор",
+    "headline": "Information System for Automated Board Game Tournament Management",
+    "description": "Бакалаврська робота з розробки інформаційної системи управління турнірами",
+    "author": {
+      "@type": "Person",
+      "name": "Студент"
+    },
+    "educationalLevel": "Bachelor",
+    "inLanguage": "uk",
+    "keywords": "настільні ігри, турнір, інформаційна система, автоматизація"
+  }
+  </script>
+
+  <style>
+    /* ─── DESIGN TOKENS ─── */
+    :root {
+      --bg:         #0d0905;
+      --bg-2:       #130c06;
+      --bg-card:    #1c1209;
+      --bg-card-2:  #231608;
+      --border:     #3a2510;
+      --border-lit: #6b3d14;
+      --wood:       #c8742a;
+      --wood-light: #e8943a;
+      --wood-pale:  #f5c87a;
+      --amber:      #f0a832;
+      --cream:      #f5e8c8;
+      --muted:      #8a7060;
+      --text:       #e8d8b8;
+      --text-dim:   #b09070;
+      --green:      #4a8c5c;
+      --green-lit:  #6aac7c;
+      --shadow:     0 4px 32px rgba(0,0,0,.7);
+      --glow:       0 0 40px rgba(200,116,42,.15);
+    }
+
+    /* ─── RESET ─── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Georgia', 'Times New Roman', serif;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ─── GRAIN OVERLAY ─── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+      opacity: .5;
+    }
+
+    /* ─── TYPOGRAPHY ─── */
+    h1, h2, h3, h4 {
+      font-family: 'Georgia', 'Palatino Linotype', serif;
+      line-height: 1.2;
+      letter-spacing: -.01em;
+    }
+
+    /* ─── UTILITIES ─── */
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 clamp(1rem, 5vw, 3rem); }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; }
+    a { color: var(--wood-light); text-decoration: none; transition: color .2s; }
+    a:hover { color: var(--wood-pale); }
+    a:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; border-radius: 2px; }
+
+    /* ─── BOARD PATTERN (decorative) ─── */
+    .board-stripe {
+      height: 6px;
+      background: repeating-linear-gradient(90deg,
+        var(--wood) 0, var(--wood) 50%, var(--bg-card) 50%, var(--bg-card) 100%);
+      background-size: 48px 6px;
+      opacity: .6;
+    }
+
+    /* ─── HEADER / HERO ─── */
+    header {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 6rem 0 4rem;
+      overflow: hidden;
+    }
+
+    /* Board grid background */
+    header::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 60px 60px;
+      opacity: .3;
+    }
+
+    header::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 80% 70% at 50% 40%,
+        rgba(200,116,42,.08) 0%, transparent 70%);
+    }
+
+    .hero-inner {
+      position: relative; z-index: 1;
+    }
+
+    /* Floating chess pieces — decorative aria-hidden */
+    .chess-deco {
+      position: absolute;
+      font-size: clamp(4rem, 12vw, 10rem);
+      opacity: .04;
+      user-select: none;
+      pointer-events: none;
+      animation: float 8s ease-in-out infinite;
+    }
+    .chess-deco:nth-child(1) { top: 8%; left: 3%; animation-delay: 0s; }
+    .chess-deco:nth-child(2) { top: 15%; right: 5%; font-size: clamp(3rem, 8vw, 7rem); animation-delay: 2s; }
+    .chess-deco:nth-child(3) { bottom: 20%; left: 8%; font-size: clamp(2rem, 6vw, 5rem); animation-delay: 4s; }
+    .chess-deco:nth-child(4) { bottom: 10%; right: 10%; animation-delay: 1s; }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-20px) rotate(3deg); }
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: .6rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-lit);
+      border-radius: 2px;
+      padding: .35rem .9rem;
+      font-size: .8rem;
+      text-transform: uppercase;
+      letter-spacing: .15em;
+      color: var(--wood);
+      margin-bottom: 2rem;
+    }
+    .hero-eyebrow span { color: var(--muted); }
+
+    h1.hero-title {
+      font-size: clamp(2rem, 5.5vw, 4rem);
+      color: var(--cream);
+      margin-bottom: 1rem;
+      max-width: 800px;
+    }
+
+    .hero-title-en {
+      display: block;
+      font-size: clamp(1rem, 2.5vw, 1.5rem);
+      color: var(--muted);
+      font-style: italic;
+      margin-top: .4rem;
+      font-weight: normal;
+    }
+
+    .hero-desc {
+      font-size: clamp(.95rem, 2vw, 1.15rem);
+      color: var(--text-dim);
+      max-width: 600px;
+      margin-bottom: 2.5rem;
+      font-style: italic;
+    }
+
+    .hero-keywords {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .5rem;
+      margin-bottom: 3rem;
+    }
+
+    .kw-tag {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      padding: .25rem .7rem;
+      font-size: .78rem;
+      color: var(--wood);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .hero-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: .6rem;
+      background: var(--wood);
+      color: var(--bg);
+      font-family: inherit;
+      font-size: .95rem;
+      font-weight: bold;
+      padding: .85rem 2rem;
+      border-radius: 2px;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      transition: background .2s, transform .15s;
+    }
+    .hero-cta:hover { background: var(--wood-light); transform: translateY(-2px); color: var(--bg); }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 2rem; left: 50%;
+      transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: .4rem;
+      color: var(--muted);
+      font-size: .75rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      animation: bounce 2s ease-in-out infinite;
+    }
+    .scroll-hint svg { width: 20px; opacity: .5; }
+    @keyframes bounce { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(8px)} }
+
+    /* ─── NAV ─── */
+    nav[aria-label="Основна навігація"] {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(13,9,5,.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: .9rem 0;
+      gap: 1rem;
+    }
+
+    .nav-logo {
+      font-size: .9rem;
+      font-weight: bold;
+      color: var(--wood);
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      display: flex; align-items: center; gap: .5rem;
+    }
+
+    .nav-links {
+      display: flex; gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: .82rem;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--wood-light); }
+
+    /* ─── SECTION SHARED ─── */
+    section { padding: clamp(4rem, 10vw, 8rem) 0; }
+
+    .section-label {
+      display: flex; align-items: center; gap: 1rem;
+      font-size: .75rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--wood);
+      margin-bottom: 1.2rem;
+    }
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+      max-width: 80px;
+    }
+
+    h2.section-title {
+      font-size: clamp(1.6rem, 4vw, 2.8rem);
+      color: var(--cream);
+      margin-bottom: 2rem;
+    }
+
+    /* ─── RELEVANCE ─── */
+    .relevance-section { background: var(--bg-2); }
+
+    .relevance-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: start;
+    }
+
+    .relevance-text p {
+      color: var(--text-dim);
+      margin-bottom: 1.2rem;
+      font-size: 1.05rem;
+    }
+
+    .stat-cards {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--wood);
+      padding: 1.4rem;
+      border-radius: 2px;
+    }
+
+    .stat-num {
+      font-size: 2.2rem;
+      font-weight: bold;
+      color: var(--amber);
+      line-height: 1;
+      margin-bottom: .3rem;
+    }
+
+    .stat-label {
+      font-size: .8rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    /* ─── PURPOSE / TASKS ─── */
+    .purpose-section { position: relative; overflow: hidden; }
+
+    .purpose-section::before {
+      content: '♞';
+      position: absolute;
+      right: -2rem; top: 50%;
+      transform: translateY(-50%);
+      font-size: 18rem;
+      opacity: .025;
+      pointer-events: none;
+    }
+
+    .purpose-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: 4rem;
+      align-items: start;
+    }
+
+    .purpose-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-lit);
+      padding: 2rem;
+      border-radius: 2px;
+      position: relative;
+    }
+
+    .purpose-box::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--wood), var(--amber), transparent);
+    }
+
+    .purpose-box h3 {
+      font-size: 1.1rem;
+      color: var(--wood-pale);
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      font-size: .85rem;
+    }
+
+    .purpose-box p { color: var(--text-dim); font-size: 1rem; }
+
+    .tasks-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .tasks-list li {
+      display: flex;
+      gap: 1.2rem;
+      align-items: flex-start;
+    }
+
+    .task-num {
+      flex-shrink: 0;
+      width: 2.2rem; height: 2.2rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-lit);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .85rem;
+      color: var(--wood);
+      font-weight: bold;
+      border-radius: 2px;
+      margin-top: .15rem;
+    }
+
+    .task-body h4 {
+      font-size: .95rem;
+      color: var(--cream);
+      margin-bottom: .3rem;
+    }
+
+    .task-body p {
+      font-size: .88rem;
+      color: var(--text-dim);
+    }
+
+    /* ─── METHODOLOGY ─── */
+    .methodology-section { background: var(--bg-2); }
+
+    .method-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-top: 2.5rem;
+    }
+
+    .method-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 1.8rem;
+      border-radius: 2px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color .2s, transform .2s;
+    }
+
+    .method-card:hover {
+      border-color: var(--border-lit);
+      transform: translateY(-4px);
+    }
+
+    .method-card::after {
+      content: '';
+      position: absolute; bottom: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--wood), transparent);
+      opacity: 0;
+      transition: opacity .2s;
+    }
+    .method-card:hover::after { opacity: 1; }
+
+    .method-icon {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      display: block;
+    }
+
+    .method-card h3 {
+      font-size: 1rem;
+      color: var(--wood-pale);
+      margin-bottom: .7rem;
+    }
+
+    .method-card p {
+      font-size: .88rem;
+      color: var(--text-dim);
+    }
+
+    /* ─── RESULTS ─── */
+    .results-section {}
+
+    .results-intro {
+      max-width: 680px;
+      color: var(--text-dim);
+      font-size: 1.05rem;
+      margin-bottom: 3rem;
+      font-style: italic;
+    }
+
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.2rem;
+    }
+
+    .result-item {
+      display: flex;
+      gap: 1.2rem;
+      align-items: flex-start;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 1.4rem;
+      border-radius: 2px;
+      transition: border-color .2s;
+    }
+    .result-item:hover { border-color: var(--border-lit); }
+
+    .result-icon {
+      flex-shrink: 0;
+      font-size: 1.4rem;
+      margin-top: .1rem;
+    }
+
+    .result-item h4 {
+      font-size: .92rem;
+      color: var(--cream);
+      margin-bottom: .3rem;
+    }
+
+    .result-item p {
+      font-size: .84rem;
+      color: var(--muted);
+    }
+
+    /* ─── VISUAL / SYSTEM PREVIEW ─── */
+    .preview-section { background: var(--bg-2); overflow: hidden; }
+
+    .system-diagram {
+      margin-top: 3rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2.5rem;
+      position: relative;
+    }
+
+    .diagram-title {
+      text-align: center;
+      font-size: .8rem;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 2.5rem;
+    }
+
+    .diagram-layers {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      max-width: 780px;
+      margin: 0 auto;
+    }
+
+    .layer {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .layer-label {
+      flex-shrink: 0;
+      width: 120px;
+      font-size: .72rem;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--muted);
+      text-align: right;
+    }
+
+    .layer-boxes {
+      display: flex;
+      gap: .6rem;
+      flex: 1;
+      flex-wrap: wrap;
+    }
+
+    .box {
+      flex: 1;
+      min-width: 80px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      padding: .6rem .8rem;
+      font-size: .78rem;
+      color: var(--text-dim);
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .box.accent {
+      border-color: var(--wood);
+      color: var(--wood-pale);
+      background: rgba(200,116,42,.06);
+    }
+
+    .box.green {
+      border-color: var(--green);
+      color: var(--green-lit);
+      background: rgba(74,140,92,.06);
+    }
+
+    .layer-arrow {
+      display: flex;
+      justify-content: center;
+      color: var(--border-lit);
+      font-size: 1.2rem;
+    }
+
+    /* ─── TECH STACK ─── */
+    .tech-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .8rem;
+      margin-top: 2.5rem;
+    }
+
+    .tech-badge {
+      display: flex; align-items: center; gap: .5rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      padding: .5rem 1rem;
+      font-size: .82rem;
+      color: var(--text-dim);
+    }
+
+    .tech-badge .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--wood);
+      flex-shrink: 0;
+    }
+
+    /* ─── CONTACT ─── */
+    .contact-section {
+      background: var(--bg-2);
+      border-top: 1px solid var(--border);
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: start;
+    }
+
+    .contact-info p {
+      color: var(--text-dim);
+      margin-bottom: 2rem;
+    }
+
+    .contact-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: .9rem;
+    }
+
+    .contact-list li {
+      display: flex;
+      align-items: center;
+      gap: .8rem;
+      font-size: .9rem;
+      color: var(--text-dim);
+    }
+
+    .contact-list .ci { color: var(--wood); font-size: 1rem; }
+
+    .links-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 2rem;
+      border-radius: 2px;
+    }
+
+    .links-box h3 {
+      font-size: .8rem;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      color: var(--muted);
+      margin-bottom: 1.5rem;
+    }
+
+    .link-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: .9rem 0;
+      border-bottom: 1px solid var(--border);
+      transition: padding-left .2s;
+    }
+    .link-item:last-child { border-bottom: none; }
+    .link-item:hover { padding-left: .5rem; }
+
+    .link-item-icon { font-size: 1.2rem; flex-shrink: 0; }
+
+    .link-item-body small {
+      display: block;
+      font-size: .72rem;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--muted);
+      margin-bottom: .15rem;
+    }
+
+    .link-item-body a {
+      font-size: .9rem;
+      color: var(--wood-light);
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem 0;
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      font-size: .8rem;
+      color: var(--muted);
+    }
+
+    .footer-inner strong { color: var(--text-dim); }
+
+    /* ─── DIVIDER ─── */
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border-lit), transparent);
+      margin: 0;
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 900px) {
+      .relevance-grid,
+      .purpose-grid,
+      .contact-grid { grid-template-columns: 1fr; gap: 2rem; }
+
+      .method-grid { grid-template-columns: 1fr 1fr; }
+      .results-grid { grid-template-columns: 1fr; }
+
+      .nav-links { display: none; }
+    }
+
+    @media (max-width: 600px) {
+      .stat-cards { grid-template-columns: 1fr 1fr; }
+      .method-grid { grid-template-columns: 1fr; }
+      .layer-label { width: 80px; font-size: .65rem; }
+      .box { min-width: 60px; font-size: .7rem; }
+      .purpose-grid { gap: 1.5rem; }
+    }
+
+    /* ─── ANIMATIONS ─── */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity .7s ease, transform .7s ease;
+    }
+    .fade-in.visible { opacity: 1; transform: none; }
+  </style>
+</head>
+
+<body>
+
+  <!-- Navigation -->
+  <nav aria-label="Основна навігація">
+    <div class="container nav-inner">
+      <div class="nav-logo" aria-label="Бакалаврська робота">
+        <span aria-hidden="true">♟</span> БР 2025–2026
+      </div>
+      <ul class="nav-links" role="list">
+        <li><a href="#relevance">Актуальність</a></li>
+        <li><a href="#purpose">Мета та завдання</a></li>
+        <li><a href="#methodology">Методологія</a></li>
+        <li><a href="#results">Результати</a></li>
+        <li><a href="#contact">Контакти</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <header role="banner">
+    <span class="chess-deco" aria-hidden="true">♜</span>
+    <span class="chess-deco" aria-hidden="true">♛</span>
+    <span class="chess-deco" aria-hidden="true">♟</span>
+    <span class="chess-deco" aria-hidden="true">♞</span>
+
+    <div class="container hero-inner">
+      <div class="hero-eyebrow" aria-label="Бакалаврська кваліфікаційна робота">
+        <span aria-hidden="true">◆</span>
+        Бакалаврська кваліфікаційна робота
+        <span>· 2025–2026</span>
+      </div>
+
+      <h1 class="hero-title">
+        Інформаційна система для автоматизації управління турнірами з настільних ігор
+        <span class="hero-title-en" lang="en">
+          Information System for Automated Board Game Tournament Management
+        </span>
+      </h1>
+
+      <p class="hero-desc">
+        Розробка веб-орієнтованої ІС, що забезпечує повний цикл організації, проведення
+        та аналізу результатів змагань з настільних ігор будь-якого масштабу.
+      </p>
+
+      <div class="hero-keywords" aria-label="Ключові слова">
+        <span class="kw-tag">Настільні ігри</span>
+        <span class="kw-tag">Турніри</span>
+        <span class="kw-tag">Інформаційна система</span>
+        <span class="kw-tag">Автоматизація</span>
+        <span class="kw-tag">Веб-додаток</span>
+        <span class="kw-tag">Управління змаганнями</span>
+        <span class="kw-tag">Swiss-система</span>
+        <span class="kw-tag">База даних</span>
+      </div>
+
+      <a href="#relevance" class="hero-cta" aria-label="Дізнатися більше про роботу">
+        <span aria-hidden="true">▶</span> Детальніше про роботу
+      </a>
+    </div>
+
+    <div class="scroll-hint" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 5v14M5 12l7 7 7-7"/>
+      </svg>
+      Прокрутіть
+    </div>
+  </header>
+
+  <div class="board-stripe" aria-hidden="true"></div>
+
+  <!-- RELEVANCE -->
+  <section id="relevance" class="relevance-section" aria-labelledby="relevance-heading">
+    <div class="container fade-in">
+      <div class="section-label">01</div>
+      <h2 class="section-title" id="relevance-heading">Актуальність теми</h2>
+
+      <div class="relevance-grid">
+        <div class="relevance-text">
+          <p>
+            Настільні ігри переживають глобальне відродження: кількість учасників організованих
+            змагань щорічно зростає. Клуби, федерації та ігрові магазини щомісяця організовують
+            десятки турнірів — від локальних до міжнародних.
+          </p>
+          <p>
+            Проте переважна більшість організаторів досі покладається на таблиці Excel, паперові
+            жеребкування та розрізнені месенджер-чати. Це призводить до помилок, затримок
+            і незадоволеності учасників.
+          </p>
+          <p>
+            Існуючі рішення або надто спеціалізовані (лише шахи/го), або надто дорогі для аматорських
+            спільнот. Розрив між потребою та доступним інструментарієм — і є полем для даного дослідження.
+          </p>
+        </div>
+
+        <div class="stat-cards" role="list" aria-label="Статистика">
+          <div class="stat-card" role="listitem">
+            <div class="stat-num" aria-label="понад 5000">5 000+</div>
+            <div class="stat-label">турнірних подій на рік лише у Boardgamegeek</div>
+          </div>
+          <div class="stat-card" role="listitem">
+            <div class="stat-num">~70%</div>
+            <div class="stat-label">організаторів використовують ручні методи обліку</div>
+          </div>
+          <div class="stat-card" role="listitem">
+            <div class="stat-num">12+</div>
+            <div class="stat-label">популярних систем жеребкування потребують підтримки</div>
+          </div>
+          <div class="stat-card" role="listitem">
+            <div class="stat-num">3×</div>
+            <div class="stat-label">зниження часу адміністрування при автоматизації</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider" aria-hidden="true"></div>
+
+  <!-- PURPOSE & TASKS -->
+  <section id="purpose" class="purpose-section" aria-labelledby="purpose-heading">
+    <div class="container fade-in">
+      <div class="section-label">02</div>
+      <h2 class="section-title" id="purpose-heading">Мета та завдання</h2>
+
+      <div class="purpose-grid">
+        <div>
+          <div class="purpose-box" role="region" aria-labelledby="goal-heading">
+            <h3 id="goal-heading">Мета дослідження</h3>
+            <p>
+              Розробити та реалізувати інформаційну систему, яка автоматизує повний цикл
+              управління турнірами з настільних ігор: від реєстрації учасників до формування
+              підсумкових рейтингів, забезпечуючи масштабованість, зручність та надійність.
+            </p>
+          </div>
+        </div>
+
+        <ol class="tasks-list" aria-label="Завдання дослідження">
+          <li>
+            <div class="task-num" aria-hidden="true">1</div>
+            <div class="task-body">
+              <h4>Аналіз предметної галузі</h4>
+              <p>Дослідити існуючі системи управління турнірами, виявити їх переваги та недоліки, сформулювати вимоги до нового рішення.</p>
+            </div>
+          </li>
+          <li>
+            <div class="task-num" aria-hidden="true">2</div>
+            <div class="task-body">
+              <h4>Проектування архітектури</h4>
+              <p>Розробити структуру бази даних та архітектуру серверної частини з урахуванням вимог до продуктивності та масштабованості.</p>
+            </div>
+          </li>
+          <li>
+            <div class="task-num" aria-hidden="true">3</div>
+            <div class="task-body">
+              <h4>Реалізація модулів жеребкування</h4>
+              <p>Імплементувати алгоритми Swiss, Round-Robin, Single/Double Elimination для різних форматів змагань.</p>
+            </div>
+          </li>
+          <li>
+            <div class="task-num" aria-hidden="true">4</div>
+            <div class="task-body">
+              <h4>Розробка інтерфейсу користувача</h4>
+              <p>Створити адаптивний веб-інтерфейс для організаторів, учасників та глядачів із реальним часом оновлень.</p>
+            </div>
+          </li>
+          <li>
+            <div class="task-num" aria-hidden="true">5</div>
+            <div class="task-body">
+              <h4>Тестування та оцінка ефективності</h4>
+              <p>Провести функціональне та навантажувальне тестування, порівняти з існуючими аналогами.</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <div class="board-stripe" aria-hidden="true"></div>
+
+  <!-- METHODOLOGY -->
+  <section id="methodology" class="methodology-section" aria-labelledby="method-heading">
+    <div class="container fade-in">
+      <div class="section-label">03</div>
+      <h2 class="section-title" id="method-heading">Методологія дослідження</h2>
+
+      <div class="method-grid" role="list">
+        <article class="method-card" role="listitem">
+          <span class="method-icon" aria-hidden="true">🔍</span>
+          <h3>Аналітичні методи</h3>
+          <p>Порівняльний аналіз існуючих систем (Challonge, Toornament, Swiss-Manager), метод структурного аналізу вимог, UML-моделювання.</p>
+        </article>
+
+        <article class="method-card" role="listitem">
+          <span class="method-icon" aria-hidden="true">⚙️</span>
+          <h3>Технічна реалізація</h3>
+          <p>Agile-методологія розробки (Scrum-спринти), розробка через тестування (TDD), REST API як основний протокол взаємодії компонентів.</p>
+        </article>
+
+        <article class="method-card" role="listitem">
+          <span class="method-icon" aria-hidden="true">🧮</span>
+          <h3>Алгоритмічні методи</h3>
+          <p>Дослідження та реалізація алгоритмів жеребкування: Monrad Swiss, Dutch Swiss, Round Robin. Алгоритми оцінки рейтингу Elo.</p>
+        </article>
+
+        <article class="method-card" role="listitem">
+          <span class="method-icon" aria-hidden="true">🗄️</span>
+          <h3>Проектування БД</h3>
+          <p>Реляційна модель (PostgreSQL), нормалізація до 3НФ, індексування для прискорення запитів рейтингових таблиць та сіток турніру.</p>
+        </article>
+
+        <article class="method-card" role="listitem">
+          <span class="method-icon" aria-hidden="true">🌐</span>
+          <h3>Веб-технології</h3>
+          <p>SPA-архітектура на React, серверна частина Node.js/Express, WebSocket для live-оновлень сітки, Docker для контейнеризації.</p>
+        </article>
+
+        <article class="method-card" role="listitem">
+          <span class="method-icon" aria-hidden="true">📊</span>
+          <h3>Методи оцінки</h3>
+          <p>Навантажувальне тестування (k6), опитування організаторів для оцінки UX, метрики: час операцій, кількість помилок, задоволеність.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- SYSTEM PREVIEW (diagram) -->
+  <section class="preview-section" aria-labelledby="preview-heading">
+    <div class="container fade-in">
+      <div class="section-label">04</div>
+      <h2 class="section-title" id="preview-heading">Архітектура системи</h2>
+
+      <div class="system-diagram" role="img" aria-label="Архітектурна схема інформаційної системи">
+        <p class="diagram-title">Багаторівнева архітектура ІС управління турнірами</p>
+
+        <div class="diagram-layers">
+          <div class="layer">
+            <div class="layer-label">Клієнти</div>
+            <div class="layer-boxes">
+              <div class="box accent">Організатор</div>
+              <div class="box accent">Учасник</div>
+              <div class="box accent">Глядач</div>
+              <div class="box">Адміністратор</div>
+            </div>
+          </div>
+
+          <div class="layer-arrow" aria-hidden="true">↕ HTTPS / WebSocket</div>
+
+          <div class="layer">
+            <div class="layer-label">Frontend</div>
+            <div class="layer-boxes">
+              <div class="box accent">React SPA</div>
+              <div class="box">Tournament Bracket UI</div>
+              <div class="box">Live Score Board</div>
+            </div>
+          </div>
+
+          <div class="layer-arrow" aria-hidden="true">↕ REST API / WS</div>
+
+          <div class="layer">
+            <div class="layer-label">Backend</div>
+            <div class="layer-boxes">
+              <div class="box green">Auth Service</div>
+              <div class="box green">Tournament Engine</div>
+              <div class="box green">Pairing Algorithm</div>
+              <div class="box green">Rating Service</div>
+            </div>
+          </div>
+
+          <div class="layer-arrow" aria-hidden="true">↕ ORM / Queries</div>
+
+          <div class="layer">
+            <div class="layer-label">Дані</div>
+            <div class="layer-boxes">
+              <div class="box">PostgreSQL</div>
+              <div class="box">Redis Cache</div>
+              <div class="box">File Storage</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tech-row" role="list" aria-label="Технологічний стек">
+        <div class="tech-badge" role="listitem"><span class="dot" aria-hidden="true"></span>React 18</div>
+        <div class="tech-badge" role="listitem"><span class="dot" aria-hidden="true"></span>Node.js</div>
+        <div class="tech-badge" role="listitem"><span class="dot" aria-hidden="true"></span>Express</div>
+        <div class="tech-badge" role="listitem"><span class="dot" aria-hidden="true"></span>PostgreSQL</div>
+        <div class="tech-badge" role="listitem"><span class="dot" aria-hidden="true"></span>Redis</div>
+        <div class="tech-badge" role="listitem"><span class="dot" aria-hidden="true"></span>WebSocket</div>
+        <div class="tech-badge" role="listitem"><span class="dot" aria-hidden="true"></span>Docker</div>
+        <div class="tech-badge" role="listitem"><span class="dot" aria-hidden="true"></span>TypeScript</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider" aria-hidden="true"></div>
+
+  <!-- RESULTS -->
+  <section id="results" class="results-section" aria-labelledby="results-heading">
+    <div class="container fade-in">
+      <div class="section-label">05</div>
+      <h2 class="section-title" id="results-heading">Очікувані результати</h2>
+      <p class="results-intro">
+        Реалізація проєкту забезпечить повноцінну платформу для проведення турнірів будь-якого
+        масштабу з мінімальними витратами на адміністрування та максимальною прозорістю для учасників.
+      </p>
+
+      <div class="results-grid" role="list">
+        <article class="result-item" role="listitem">
+          <div class="result-icon" aria-hidden="true">🏆</div>
+          <div>
+            <h4>Повнофункціональна веб-система</h4>
+            <p>Готовий до розгортання веб-додаток із підтримкою турнірів Swiss, Round Robin та Elimination форматів.</p>
+          </div>
+        </article>
+
+        <article class="result-item" role="listitem">
+          <div class="result-icon" aria-hidden="true">⚡</div>
+          <div>
+            <h4>Скорочення адміністративних витрат</h4>
+            <p>Автоматичне жеребкування, підрахунок очок та формування рейтингу скоротить час адміністратора на ≥60%.</p>
+          </div>
+        </article>
+
+        <article class="result-item" role="listitem">
+          <div class="result-icon" aria-hidden="true">📱</div>
+          <div>
+            <h4>Адаптивний інтерфейс</h4>
+            <p>Зручне використання з будь-якого пристрою: учасники стежать за результатами зі смартфона в реальному часі.</p>
+          </div>
+        </article>
+
+        <article class="result-item" role="listitem">
+          <div class="result-icon" aria-hidden="true">📐</div>
+          <div>
+            <h4>Відкрита архітектура</h4>
+            <p>Модульна структура з REST API дозволяє інтегрувати систему з існуючими клубними сайтами та платформами.</p>
+          </div>
+        </article>
+
+        <article class="result-item" role="listitem">
+          <div class="result-icon" aria-hidden="true">📄</div>
+          <div>
+            <h4>Наукова документація</h4>
+            <p>Кваліфікаційна робота з аналізом алгоритмів жеребкування, порівнянням систем та обґрунтуванням архітектурних рішень.</p>
+          </div>
+        </article>
+
+        <article class="result-item" role="listitem">
+          <div class="result-icon" aria-hidden="true">🧪</div>
+          <div>
+            <h4>Верифіковане тестування</h4>
+            <p>Набір автоматичних тестів (unit + integration) та результати навантажувального тестування системи.</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <div class="board-stripe" aria-hidden="true"></div>
+
+  <!-- CONTACT -->
+  <section id="contact" class="contact-section" aria-labelledby="contact-heading">
+    <div class="container fade-in">
+      <div class="section-label">06</div>
+      <h2 class="section-title" id="contact-heading">Контакти та посилання</h2>
+
+      <div class="contact-grid">
+        <div class="contact-info">
+          <p>З питаннями щодо роботи, пропозиціями щодо співпраці або для отримання доступу до повного тексту — звертайтеся:</p>
+
+          <ul class="contact-list" aria-label="Контактна інформація">
+            <li>
+              <span class="ci" aria-hidden="true">👤</span>
+              <span><strong>Студент:</strong> Краснокутський Міхаіл Сергійович</span>
+            </li>
+            <li>
+              <span class="ci" aria-hidden="true">🎓</span>
+              <span><strong>Науковий керівник:</strong> Прилепа Дмитро</span>
+            </li>
+            <li>
+              <span class="ci" aria-hidden="true">🏫</span>
+              <span><strong>Університет:</strong> Сумський державний університет </span>
+            </li>
+            <li>
+              <span class="ci" aria-hidden="true">📧</span>
+              <a href="mailto:mishamobil73@gmail.com">mishamobil73@gmail.com</a>
+            </li>
+            <li>
+              <span class="ci" aria-hidden="true">📍</span>
+              <span>Кафедра інформаційних технологій</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="links-box">
+          <h3>Корисні посилання</h3>
+
+          <div class="link-item">
+            <span class="link-item-icon" aria-hidden="true">📦</span>
+            <div class="link-item-body">
+              <small>Репозиторій проєкту</small>
+              <a href="https://github.com/mishamsa/tech-sup" target="_blank" rel="noopener noreferrer" aria-label="GitHub репозиторій системи (відкривається у новому вікні)">
+                github.com/username/tournament-system
+              </a>
+            </div>
+          </div>
+
+          <div class="link-item">
+            <span class="link-item-icon" aria-hidden="true">📄</span>
+            <div class="link-item-body">
+              <small>Повний текст роботи</small>
+              <a href="#" aria-label="PDF повного тексту бакалаврської роботи">
+                Завантажити PDF
+              </a>
+            </div>
+          </div>
+
+          <div class="link-item">
+            <span class="link-item-icon" aria-hidden="true">🎥</span>
+            <div class="link-item-body">
+              <small>Демонстрація системи</small>
+              <a href="#" aria-label="Відео-демонстрація системи">
+                Переглянути демо
+              </a>
+            </div>
+          </div>
+
+          <div class="link-item">
+            <span class="link-item-icon" aria-hidden="true">🚀</span>
+            <div class="link-item-body">
+              <small>Живий демо-стенд</small>
+              <a href="#" target="_blank" rel="noopener noreferrer" aria-label="Робоча демо-версія системи">
+                demo.tournament-system.ua
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer role="contentinfo">
+    <div class="container footer-inner">
+      <div>
+        <strong>Інформаційна система управління турнірами</strong> ·
+        Бакалаврська робота · 2025–2026
+      </div>
+      <div>
+        <span aria-hidden="true">♟ ♜ ♞ ♛</span>
+      </div>
+      <div>Кафедра інформаційних технологій</div>
+    </div>
+  </footer>
+
+  <script>
+    // Intersection Observer for fade-in animations
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+  </script>
+
+</body>
+</html>
