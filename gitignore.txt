@@ -1,0 +1,19 @@
+# Python & Virtual Environment
+__pycache__/
+*.py[cod]
+venv/
+.env
+env/
+
+# API Keys & Secrets (CRITICAL)
+config.json
+token.txt
+*.key
+
+# Database
+*.sqlite3
+*.db
+
+# IDEs
+.vscode/
+.idea/
