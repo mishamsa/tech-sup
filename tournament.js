@@ -1,18 +1,15 @@
-// src/tournament.js  — AFTER linting fixes
-// ✅ Усі помилки виправлено згідно з правилами eslint.config.js
+/**
+ * Модуль керування турнірною логікою.
+ * Забезпечує взаємодію з API та обробку результатів матчів.
+ */
 
-// ВИПРАВЛЕННЯ 1: var → const (no-var, prefer-const)
-const BASE_URL = 'https://api.tournament.ua/v1';
-const MAX_ROUNDS = 7; // renamed to UPPER_CASE — constant convention
-
-// ВИПРАВЛЕННЯ 2: == → === (eqeqeq); ВИПРАВЛЕННЯ: зайвий else після return (no-else-return)
-function checkStatus(status) {
-  return status === 'active';
-}
-
-// ВИПРАВЛЕННЯ 3: console.log видалено (no-console)
-// ВИПРАВЛЕННЯ 4: конкатенація → шаблонний рядок (prefer-template)
-// ВИПРАВЛЕННЯ 5: function → arrow function; == → === (eqeqeq, keyword-spacing)
+/**
+ * Отримує дані про турнір з віддаленого сервера.
+ * * @async
+ * @param {number|string} id - Унікальний ідентифікатор турніру.
+ * @returns {Promise<Object>} Об'єкт із даними турніру (назва, учасники, статус).
+ * @throws {Error} Викидає помилку, якщо сервер повернув некоректний статус або мережа недоступна.
+ */
 function fetchTournaments(id) {
   return fetch(`${BASE_URL}/tournaments/${id}`)
     .then((response) => {
@@ -23,37 +20,12 @@ function fetchTournaments(id) {
     });
 }
 
-// ВИПРАВЛЕННЯ 6: видалено невикористану змінну (no-unused-vars)
-
-// ВИПРАВЛЕННЯ 7: додано фігурні дужки (curly); == → === (eqeqeq)
-// ВИПРАВЛЕННЯ 8: function → arrow function
-function processRound(round) {
-  if (round.completed === true) {
-    return round.results;
-  }
-
-  const results = [];
-  round.matches.forEach((match) => {
-    results.push(match.winner);
-  });
-  return results;
-}
-
-// ВИПРАВЛЕННЯ 9: не переоголошуємо параметр — деструктуруємо (no-param-reassign)
-function normalizePlayer({ name, rating, ...rest }) {
-  return {
-    ...rest,
-    name: name.trim(),
-    rating: rating || 1500,
-  };
-}
-
-// ── Додатковий модуль: утиліти для Swiss-системи ──────────────────────────
-
 /**
- * Розраховує кількість раундів Swiss-турніру.
- * @param {number} participantCount - кількість учасників
- * @returns {number} рекомендована кількість раундів
+ * Розраховує рекомендовану кількість раундів для Swiss-турніру.
+ * Використовує логарифмічну формулу: ceil(log2(N)).
+ * * @param {number} participantCount - Загальна кількість учасників.
+ * @returns {number} Кількість раундів.
+ * @throws {Error} Якщо кількість учасників менше ніж 2.
  */
 function calcSwissRounds(participantCount) {
   if (participantCount < 2) {
@@ -61,15 +33,3 @@ function calcSwissRounds(participantCount) {
   }
   return Math.min(Math.ceil(Math.log2(participantCount)), MAX_ROUNDS);
 }
-
-/**
- * Форматує рядок результату матчу для відображення.
- * @param {object} match - об'єкт матчу
- * @returns {string} відформатований рядок
- */
-function formatMatchResult(match) {
-  const { player1, player2, score1, score2 } = match;
-  return `${player1} ${score1}–${score2} ${player2}`;
-}
-
-export { checkStatus, fetchTournaments, processRound, normalizePlayer, calcSwissRounds, formatMatchResult };

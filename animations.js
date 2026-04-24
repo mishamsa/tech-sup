@@ -1,10 +1,15 @@
-// src/animations.js
-// Модуль анімацій — Intersection Observer для fade-in ефектів
+/**
+ * Модуль анімацій для інтерфейсу турнірної платформи.
+ * Використовує Intersection Observer API для оптимізації продуктивності.
+ */
 
 /**
  * Ініціалізує спостерігач для плавної появи елементів при прокрутці.
- * @param {string} selector - CSS-селектор для елементів з анімацією
- * @param {object} options - параметри IntersectionObserver
+ * * @param {string} [selector='.fade-in'] - CSS-селектор для елементів з анімацією.
+ * @param {Object} [options={}] - Параметри конфігурації для IntersectionObserver.
+ * @returns {IntersectionObserver} Екземпляр спостерігача.
+ * @example
+ * initFadeInObserver('.card', { threshold: 0.5 });
  */
 function initFadeInObserver(selector = '.fade-in', options = {}) {
   const defaultOptions = {
@@ -32,12 +37,12 @@ function initFadeInObserver(selector = '.fade-in', options = {}) {
 
 /**
  * Ініціалізує sticky-навігацію зі зміною стилю при прокрутці.
+ * Додає клас 'scrolled', коли користувач прокрутив сторінку вниз.
+ * * @returns {void}
  */
 function initStickyNav() {
   const nav = document.querySelector('nav[aria-label="Основна навігація"]');
-  if (!nav) {
-    return;
-  }
+  if (!nav) return;
 
   const SCROLL_THRESHOLD = 80;
 
@@ -49,13 +54,5 @@ function initStickyNav() {
     }
   };
 
-  window.addEventListener('scroll', handleScroll, { passive: true });
+  window.addEventListener('scroll', handleScroll);
 }
-
-// Ініціалізація після завантаження DOM
-document.addEventListener('DOMContentLoaded', () => {
-  initFadeInObserver();
-  initStickyNav();
-});
-
-export { initFadeInObserver, initStickyNav };
